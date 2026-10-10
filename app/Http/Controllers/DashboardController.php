@@ -76,7 +76,23 @@ class DashboardController extends Controller
             });
         }
 
-        // 7-Day Financial Trend Data
+        // 7-Day Financial Trend Data (Optimized into 2 grouped queries)
+        $startDate = Carbon::today()->subDays(6)->startOfDay();
+
+        $dailyRevenues = Order::where('status', 'completed')
+            ->where('created_at', '>=', $startDate)
+            ->selectRaw('CAST(created_at AS DATE) as day_key, SUM(total_amount) as total_rev')
+            ->groupBy('day_key')
+            ->pluck('total_rev', 'day_key');
+
+        $dailyCosts = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->where('orders.status', 'completed')
+            ->where('orders.created_at', '>=', $startDate)
+            ->selectRaw('CAST(orders.created_at AS DATE) as day_key, SUM(order_items.quantity * products.cost) as total_cost')
+            ->groupBy('day_key')
+            ->pluck('total_cost', 'day_key');
+
         $trendLabels = [];
         $trendRevenue = [];
         $trendProfit = [];
@@ -84,19 +100,13 @@ class DashboardController extends Controller
 
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
-            $dayName = $date->format('D'); // Wed, Thu, Fri...
-            $trendLabels[] = $dayName;
+            $dayKey = $date->format('Y-m-d');
+            $trendLabels[] = $date->format('D');
 
-            $dayRev = (float)(Order::where('status', 'completed')->whereDate('created_at', $date)->sum('total_amount') ?? 0);
-            $dayCost = (float)(OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
-                ->where('orders.status', 'completed')
-                ->whereDate('orders.created_at', $date)
-                ->join('products', 'order_items.product_id', '=', 'products.id')
-                ->sum(DB::raw('order_items.quantity * products.cost')) ?? 0);
-            
+            $dayRev = (float)($dailyRevenues[$dayKey] ?? 0);
+            $dayCost = (float)($dailyCosts[$dayKey] ?? 0);
             $dayProf = max(0, $dayRev - $dayCost);
 
-            // If day is empty and it's today, keep real data, or provide smooth trend base
             $trendRevenue[] = $dayRev;
             $trendProfit[] = $dayProf;
             $trendExpenses[] = $dayCost;

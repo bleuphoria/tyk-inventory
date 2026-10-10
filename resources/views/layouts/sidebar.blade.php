@@ -1,7 +1,9 @@
 @php
     $currentUser = Auth::user();
     $lowStockThreshold = low_stock_threshold();
-    $shortageCount = \App\Models\Product::where('stock_quantity', '<=', $lowStockThreshold)->count();
+    $shortageCount = \Illuminate\Support\Facades\Cache::remember('sidebar_shortage_count', 30, function() use ($lowStockThreshold) {
+        return \App\Models\Product::where('stock_quantity', '<=', $lowStockThreshold)->count();
+    });
 @endphp
 
 <aside class="w-60 bg-white text-slate-700 flex flex-col shrink-0 border-r border-slate-200/80 select-none h-full shadow-sm">

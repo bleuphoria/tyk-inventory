@@ -2,6 +2,7 @@
   "version": 2,
   "framework": null,
   "outputDirectory": "public",
+  "regions": ["sin1"],
   "functions": {
     "api/index.php": {
       "runtime": "vercel-php@0.7.3"
@@ -33,6 +34,7 @@
     "CACHE_STORE": "array",
     "SESSION_DRIVER": "cookie",
     "LOG_CHANNEL": "stderr",
+    "DB_PORT": "6543",
     "FILESYSTEM_DISK": "cloudinary",
     "CLOUDINARY_URL": "cloudinary://589969747257331:5wBiyrCdw1UOc1qUttUTMHceQFs@ihlkdz00"
   }
