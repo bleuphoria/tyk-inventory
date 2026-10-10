@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (app()->environment('production') || isset($_SERVER['VERCEL']) || isset($_ENV['VERCEL'])) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         \App\Models\Product::observe(\App\Observers\ProductObserver::class);
         \App\Models\InventoryTransaction::observe(\App\Observers\InventoryTransactionObserver::class);
     }
