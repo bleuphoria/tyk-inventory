@@ -18,3 +18,11 @@ yarn-error.log
 database/*.sqlite
 database/*.sqlite-journal
 .vercel
+.claude/
+.agents/
+.ai/
+AGENTS.md
+CLAUDE.md
+boost.json
+demo.md
+.mcp.json

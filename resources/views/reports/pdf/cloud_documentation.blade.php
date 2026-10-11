@@ -289,5 +289,123 @@
         </tbody>
     </table>
 
+    <div class="page-break"></div>
+
+    <table class="main-table">
+        <tbody>
+            <!-- DEPLOYMENT DOCUMENTATION -->
+            <tr>
+                <td class="section-label">Deployment Documentation</td>
+                <td class="section-content">
+                    <p style="margin-top: 0; font-weight: bold; margin-bottom: 4px;">Create a guide on how to set up the Cloud Solution deployment. (It must also be in a README.md file in your Github repository)</p>
+
+                    <div style="font-size: 7.8pt; line-height: 1.45; color: #334155;">
+                        <h3 style="font-size: 9pt; color: #0f172a; margin: 4px 0 2px 0;"># Cloud Deployment Guide</h3>
+                        <p style="margin: 2px 0 6px 0;">This document describes the deployment architecture and step-by-step process for deploying a full-stack application to the cloud.</p>
+
+                        <h4 style="font-size: 8.5pt; color: #0f172a; margin: 4px 0 2px 0;">## Architecture Overview</h4>
+                        <p style="margin: 2px 0;"><strong>Frontend &amp; Application:</strong> Laravel 11 / Tailwind CSS / Blade (deployed on Vercel)</p>
+                        <p style="margin: 2px 0;"><strong>Database:</strong> Managed Cloud PostgreSQL (deployed on Supabase)</p>
+                        <p style="margin: 2px 0;"><strong>Connection Pooler:</strong> Supabase Transaction Pooler (Port 6543)</p>
+                        <p style="margin: 2px 0;"><strong>File &amp; Media Storage:</strong> Cloudinary Cloud Media Management</p>
+                        <p style="margin: 2px 0;"><strong>Serverless Runtime:</strong> Vercel PHP with temporary storage isolation</p>
+                        <p style="margin: 2px 0 6px 0;"><strong>Security &amp; Encryption:</strong> Enforced HTTPS (TLS 1.3) and Scoped Pooler Credentials</p>
+
+                        <hr style="border: none; border-top: 1px solid #cbd5e1; margin: 6px 0;">
+
+                        <h4 style="font-size: 8.5pt; color: #0f172a; margin: 4px 0 2px 0;"># System Architecture</h4>
+                        <div style="background-color: #f1f5f9; padding: 6px 10px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 7.5pt; margin-bottom: 6px;">
+                            User<br>
+                            &darr;<br>
+                            Vercel (Laravel Serverless Application)<br>
+                            &darr;<br>
+                            Supabase (Cloud PostgreSQL Database)<br>
+                            &darr;<br>
+                            Cloudinary (Media &amp; File Storage)
+                        </div>
+
+                        <hr style="border: none; border-top: 1px solid #cbd5e1; margin: 6px 0;">
+
+                        <h4 style="font-size: 8.5pt; color: #0f172a; margin: 4px 0 2px 0;"># 1. Setting Up Database (Supabase PostgreSQL)</h4>
+                        
+                        <p style="margin: 2px 0;"><strong>Step 1: Create Supabase Project</strong></p>
+                        <p style="margin: 2px 0 4px 0;">1. Go to https://supabase.com<br>2. Click <strong>New Project</strong><br>3. Enter project name and secure database password<br>4. Select Region: Southeast Asia (Singapore)</p>
+
+                        <p style="margin: 2px 0;"><strong>Step 2: Obtain Connection Pooler String</strong></p>
+                        <p style="margin: 2px 0 4px 0;">In Supabase dashboard, click <strong>Connect</strong> &rarr; Select <strong>Transaction pooler</strong> (Port 6543) for serverless connection stability.</p>
+
+                        <p style="margin: 2px 0;"><strong>Step 3: Run Migrations and Seeders</strong></p>
+                        <div style="background-color: #f1f5f9; padding: 4px 8px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 7.2pt; margin: 2px 0 6px 0;">
+                            php artisan migrate:fresh --force<br>
+                            php artisan db:seed --force
+                        </div>
+
+                        <hr style="border: none; border-top: 1px solid #cbd5e1; margin: 6px 0;">
+
+                        <h4 style="font-size: 8.5pt; color: #0f172a; margin: 4px 0 2px 0;"># 2. Configuring Cloudinary for Media Storage</h4>
+
+                        <p style="margin: 2px 0;"><strong>Step 1: Obtain Cloudinary API Credentials</strong></p>
+                        <p style="margin: 2px 0 4px 0;">1. Go to https://cloudinary.com<br>2. From Dashboard, copy your API Environment variable (<code>CLOUDINARY_URL</code>)</p>
+
+                        <p style="margin: 2px 0;"><strong>Step 2: Install Package &amp; Configure Filesystem</strong></p>
+                        <div style="background-color: #f1f5f9; padding: 4px 8px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 7.2pt; margin: 2px 0 6px 0;">
+                            composer require cloudinary-labs/cloudinary-laravel
+                        </div>
+                        <p style="margin: 2px 0 4px 0;">Set <code>FILESYSTEM_DISK=cloudinary</code> and register disk in <code>config/filesystems.php</code>.</p>
+
+                        <hr style="border: none; border-top: 1px solid #cbd5e1; margin: 6px 0;">
+
+                        <h4 style="font-size: 8.5pt; color: #0f172a; margin: 4px 0 2px 0;"># 3. Deploying Application to Vercel</h4>
+
+                        <p style="margin: 2px 0;"><strong>Step 1: Push Project to GitHub</strong></p>
+                        <div style="background-color: #f1f5f9; padding: 4px 8px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 7.2pt; margin: 2px 0 6px 0;">
+                            git add .<br>
+                            git commit -m "Production release"<br>
+                            git push origin main
+                        </div>
+
+                        <p style="margin: 2px 0;"><strong>Step 2: Import Project in Vercel</strong></p>
+                        <p style="margin: 2px 0 4px 0;">
+                            1. Go to https://vercel.com<br>
+                            2. Click <strong>Add New Project</strong><br>
+                            3. Import your GitHub repository<br>
+                            4. Configure:<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;Framework Preset: Other<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;Root Directory: ./<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;Output Directory: public
+                        </p>
+
+                        <p style="margin: 2px 0;"><strong>Step 3: Set Environment Variables</strong></p>
+                        <p style="margin: 2px 0;">In Vercel dashboard, add production variables:</p>
+                        <div style="background-color: #f1f5f9; padding: 4px 8px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 7.2pt; margin: 2px 0 6px 0;">
+                            APP_NAME="TYK Inventory"<br>
+                            APP_ENV=production<br>
+                            APP_KEY=base64:mD1nRm2HrmCfcVynsIV7xlDdNdmf3zrZ9q1UyEDv2i8=<br>
+                            APP_URL=https://tyk-inventory-kappa.vercel.app<br>
+                            DB_CONNECTION=pgsql<br>
+                            DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com<br>
+                            DB_PORT=6543<br>
+                            DB_DATABASE=postgres<br>
+                            DB_USERNAME=postgres.pzsijwhcxtnaanlpwvaq<br>
+                            DB_PASSWORD=YOUR_DB_PASSWORD<br>
+                            FILESYSTEM_DISK=cloudinary<br>
+                            CLOUDINARY_URL=cloudinary://YOUR_KEY:YOUR_SECRET@ihlkdz00
+                        </div>
+
+                        <p style="margin: 2px 0;"><strong>Step 4: Deploy</strong></p>
+                        <p style="margin: 2px 0 4px 0;">Click <strong>Deploy</strong>.</p>
+                        <p style="margin: 2px 0;">Vercel will automatically:</p>
+                        <p style="margin: 2px 0 6px 0;">
+                            1. Install Composer and Node dependencies<br>
+                            2. Compile Tailwind CSS and Vite production assets<br>
+                            3. Provision serverless PHP runtime in Singapore (sin1)<br>
+                            4. Provide public HTTPS URL with automatic SSL
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
 </body>
 </html>
