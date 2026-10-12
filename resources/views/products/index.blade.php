@@ -68,8 +68,21 @@
                     @forelse($products as $product)
                     <tr class="hover:bg-gray-50/70 transition group">
                         <td class="py-4 px-6">
-                            <div class="font-bold text-gray-900 text-sm">{{ $product->name }}</div>
-                            <div class="text-[11px] font-mono text-gray-400 mt-0.5">SKU: {{ $product->sku }}</div>
+                            <div class="flex items-center gap-3">
+                                @if($product->image_url)
+                                    <a href="{{ $product->image_url }}" target="_blank" class="flex-shrink-0" title="Click to view full image">
+                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-11 h-11 object-cover rounded-xl border border-gray-200/80 shadow-sm hover:opacity-90 transition">
+                                    </a>
+                                @else
+                                    <div class="w-11 h-11 rounded-xl bg-gray-100 border border-gray-200/60 flex items-center justify-center text-gray-400 flex-shrink-0">
+                                        <i class="fa-solid fa-bicycle text-sm text-gray-400"></i>
+                                    </div>
+                                @endif
+                                <div class="min-w-0">
+                                    <div class="font-bold text-gray-900 text-sm truncate">{{ $product->name }}</div>
+                                    <div class="text-[11px] font-mono text-gray-400 mt-0.5">SKU: {{ $product->sku }}</div>
+                                </div>
+                            </div>
                         </td>
                         <td class="py-4 px-6">
                             <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">

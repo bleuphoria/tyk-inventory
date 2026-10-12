@@ -44,7 +44,21 @@ class ProductController extends Controller
             'cost' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
         ]);
+
+        if ($request->hasFile('image')) {
+            try {
+                $cloudinary = app(\Cloudinary\Cloudinary::class);
+                $uploaded = $cloudinary->uploadApi()->upload(
+                    $request->file('image')->getRealPath(),
+                    ['folder' => 'products']
+                );
+                $validated['image_url'] = $uploaded['secure_url'];
+            } catch (\Throwable $e) {
+                return back()->withInput()->withErrors(['image' => 'Image upload failed: ' . $e->getMessage()]);
+            }
+        }
 
         Product::create($validated);
 
@@ -68,7 +82,23 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'cost' => 'required|numeric|min:0',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
         ]);
+
+        if ($request->boolean('remove_image')) {
+            $validated['image_url'] = null;
+        } elseif ($request->hasFile('image')) {
+            try {
+                $cloudinary = app(\Cloudinary\Cloudinary::class);
+                $uploaded = $cloudinary->uploadApi()->upload(
+                    $request->file('image')->getRealPath(),
+                    ['folder' => 'products']
+                );
+                $validated['image_url'] = $uploaded['secure_url'];
+            } catch (\Throwable $e) {
+                return back()->withInput()->withErrors(['image' => 'Image upload failed: ' . $e->getMessage()]);
+            }
+        }
 
         $product->update($validated);
 

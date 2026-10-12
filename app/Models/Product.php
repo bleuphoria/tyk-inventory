@@ -8,7 +8,7 @@ class Product extends Model
 {
     protected $fillable = [
         'category_id', 'supplier_id', 'name', 'sku', 'description', 
-        'price', 'cost', 'stock_quantity'
+        'price', 'cost', 'stock_quantity', 'image_url'
     ];
 
     public function category()

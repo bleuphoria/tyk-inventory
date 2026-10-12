@@ -18,7 +18,7 @@
 
     <!-- Product Form Card -->
     <div class="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm">
-        <form action="{{ route('products.store') }}" method="POST" class="space-y-6">
+        <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -88,6 +88,35 @@
                 </div>
             </div>
 
+            <!-- Product Image -->
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Product Image (Cloudinary Cloud Storage)</label>
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-gray-200 hover:border-blue-400 rounded-2xl bg-gray-50/50 hover:bg-blue-50/20 transition cursor-pointer relative" id="drop-zone" onclick="document.getElementById('image-input').click()">
+                    <div class="space-y-2 text-center" id="upload-placeholder">
+                        <div class="w-12 h-12 mx-auto rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <div class="text-xs text-gray-600">
+                            <span class="font-bold text-blue-600 hover:text-blue-500">Click to upload photo</span> or drag &amp; drop
+                        </div>
+                        <p class="text-[11px] text-gray-400">PNG, JPG, WEBP, or GIF up to 5MB (stored on Cloudinary)</p>
+                    </div>
+
+                    <!-- Image Preview Container -->
+                    <div id="image-preview-container" class="hidden flex flex-col items-center gap-3">
+                        <img id="image-preview" src="#" alt="Preview" class="w-32 h-32 object-cover rounded-2xl border-2 border-white shadow-md">
+                        <button type="button" onclick="event.stopPropagation(); removeImage();" class="text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-trash-can text-[11px]"></i> Remove / Change Photo
+                        </button>
+                    </div>
+
+                    <input id="image-input" name="image" type="file" accept="image/*" class="sr-only" onchange="previewSelectedImage(event)">
+                </div>
+                @error('image')
+                    <p class="text-xs text-rose-600 mt-1 font-semibold">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Action Buttons -->
             <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
                 <a href="{{ route('products.index') }}" class="text-xs font-bold text-gray-400 hover:text-gray-700 transition">Cancel</a>
@@ -99,4 +128,28 @@
     </div>
 
 </div>
+
+@push('scripts')
+<script>
+    function previewSelectedImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('image-preview').src = e.target.result;
+                document.getElementById('image-preview-container').classList.remove('hidden');
+                document.getElementById('upload-placeholder').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function removeImage() {
+        const input = document.getElementById('image-input');
+        input.value = '';
+        document.getElementById('image-preview-container').classList.add('hidden');
+        document.getElementById('upload-placeholder').classList.remove('hidden');
+    }
+</script>
+@endpush
 @endsection
